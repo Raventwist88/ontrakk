@@ -4,7 +4,8 @@ function BottomNav() {
   const location = useLocation()
   
   const navItems = [
-    { path: '/', label: 'Daily', icon: '📝' },
+    { path: '/', label: 'Home', icon: '🏠' },
+    { path: '/daily', label: 'Daily', icon: '📝' },
     { path: '/workouts', label: 'Workouts', icon: '💪' },
     { path: '/track', label: 'Track', icon: '📊' },
     { path: '/stats', label: 'Stats', icon: '📈' },

@@ -1,4 +1,5 @@
 import { Routes as RouterRoutes, Route } from 'react-router-dom'
+import HomePage from './pages/HomePage'
 import DailyEntryPage from './pages/DailyEntryPage'
 import WorkoutsPage from './pages/WorkoutsPage'
 import StatsPage from './pages/StatsPage'
@@ -9,7 +10,8 @@ import WorkoutTrackerPage from './pages/WorkoutTrackerPage'
 function Routes() {
   return (
     <RouterRoutes>
-      <Route path="/" element={<DailyEntryPage />} />
+      <Route path="/" element={<HomePage />} />
+      <Route path="/daily" element={<DailyEntryPage />} />
       <Route path="/track" element={<WorkoutTrackerPage />} />
       <Route path="/workouts" element={<WorkoutsPage />} />
       <Route path="/workout/:workoutId/start" element={<ActiveWorkoutPage />} />

@@ -6,11 +6,11 @@ function Navigation() {
   const location = useLocation()
 
   const links = [
-    { to: '/', label: 'Daily Entry' },
+    { to: '/', label: 'Home' },
+    { to: '/daily', label: 'Daily' },
     { to: '/workouts', label: 'Workouts' },
     { to: '/track', label: 'Track' },
     { to: '/stats', label: 'Stats' },
-    { to: '/backups', label: 'Backups' },
     { to: '/settings', label: 'Settings' }
   ]
 
