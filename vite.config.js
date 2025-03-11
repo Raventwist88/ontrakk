@@ -31,7 +31,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'prompt',
-      includeAssets: ['icons/icon-192.png', 'icons/icon-512.png'],
+      includeAssets: ['icons/*'],
       manifest: {
         name: 'OnTrakk',
         short_name: 'OnTrakk',
@@ -39,17 +39,17 @@ export default defineConfig({
         theme_color: '#ffffff',
         background_color: '#ffffff',
         display: 'standalone',
-        start_url: '.',
-        scope: '.',
+        start_url: '/ontrakk/',
+        scope: '/ontrakk/',
         icons: [
           {
-            src: './icons/icon-192.png',
+            src: '/ontrakk/icons/icon-192.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any maskable'
           },
           {
-            src: './icons/icon-512.png',
+            src: '/ontrakk/icons/icon-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'
@@ -66,15 +66,19 @@ export default defineConfig({
               cacheName: 'api-cache',
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 // 24 hours
+                maxAgeSeconds: 60 * 60 * 24
               }
             }
           }
         ],
-        navigateFallback: 'index.html'
+        navigateFallback: '/ontrakk/index.html',
+        navigateFallbackAllowlist: [/^\/ontrakk\//],
+        swDest: 'sw.js',
+        sourcemap: true
       },
       devOptions: {
-        enabled: true
+        enabled: true,
+        type: 'module'
       }
     }),
   ],
