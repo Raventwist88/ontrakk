@@ -1,1 +1,0 @@
-if('serviceWorker' in navigator) navigator.serviceWorker.register('/ontrakk/dev-sw.js?dev-sw', { scope: '/ontrakk/', type: 'classic' })

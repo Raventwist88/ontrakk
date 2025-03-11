@@ -30,7 +30,7 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'prompt',
+      registerType: 'autoUpdate',
       includeAssets: ['icons/*'],
       manifest: {
         name: 'OnTrakk',
@@ -72,9 +72,7 @@ export default defineConfig({
           }
         ],
         navigateFallback: '/ontrakk/index.html',
-        navigateFallbackAllowlist: [/^\/ontrakk\//],
-        swDest: 'sw.js',
-        sourcemap: true
+        cleanupOutdatedCaches: true
       },
       devOptions: {
         enabled: true,
