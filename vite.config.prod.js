@@ -3,9 +3,8 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
 
-// https://vite.dev/config/
 export default defineConfig({
-  base: '/',
+  base: '/your-repo-name/',
   root: path.resolve(__dirname, ''),
   server: {
     port: 5173,
@@ -29,16 +28,16 @@ export default defineConfig({
         theme_color: '#ffffff',
         background_color: '#ffffff',
         display: 'standalone',
-        start_url: '/',
+        start_url: '/your-repo-name/',
         icons: [
           {
-            src: '/icons/icon-192.png',
+            src: '/your-repo-name/icons/icon-192.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any maskable'
           },
           {
-            src: '/icons/icon-512.png',
+            src: '/your-repo-name/icons/icon-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'
@@ -55,7 +54,7 @@ export default defineConfig({
               cacheName: 'api-cache',
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 // 24 hours
+                maxAgeSeconds: 60 * 60 * 24
               }
             }
           }
@@ -66,4 +65,4 @@ export default defineConfig({
       }
     }),
   ],
-})
+}) 
