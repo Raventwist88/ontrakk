@@ -3,9 +3,19 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
 
+// Get the repository name from package.json or environment variable
+const getBase = () => {
+  // Use environment variable in production (GitHub Pages)
+  if (process.env.NODE_ENV === 'production') {
+    return '/ontrakk/' // Replace 'ontrakk' with your actual repository name
+  }
+  // Use root path for development
+  return '/'
+}
+
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/',
+  base: getBase(),
   root: path.resolve(__dirname, ''),
   server: {
     port: 5173,
@@ -29,16 +39,16 @@ export default defineConfig({
         theme_color: '#ffffff',
         background_color: '#ffffff',
         display: 'standalone',
-        start_url: '/',
+        start_url: getBase(), // Dynamic start_url
         icons: [
           {
-            src: '/icons/icon-192.png',
+            src: `${getBase()}icons/icon-192.png`, // Dynamic path
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any maskable'
           },
           {
-            src: '/icons/icon-512.png',
+            src: `${getBase()}icons/icon-512.png`, // Dynamic path
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'
@@ -66,4 +76,14 @@ export default defineConfig({
       }
     }),
   ],
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    // Ensure assets are properly hashed and cached
+    rollupOptions: {
+      output: {
+        manualChunks: undefined
+      }
+    }
+  }
 })
