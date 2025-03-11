@@ -116,9 +116,9 @@ function StatsPage() {
           </Card>
         </div>
 
-        {/* New Projection Cards */}
+        {/* New Projection Cards with different colors */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+          <Card className="bg-gradient-to-br from-indigo-500 to-indigo-600 text-white">
             <div className="text-center">
               <h3 className="text-lg font-medium mb-2">1 Week Projection</h3>
               <p className="text-3xl font-bold">
@@ -144,7 +144,7 @@ function StatsPage() {
             </div>
           </Card>
 
-          <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+          <Card className="bg-gradient-to-br from-fuchsia-500 to-fuchsia-600 text-white">
             <div className="text-center">
               <h3 className="text-lg font-medium mb-2">1 Month Projection</h3>
               <p className="text-3xl font-bold">
@@ -170,7 +170,7 @@ function StatsPage() {
             </div>
           </Card>
 
-          <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+          <Card className="bg-gradient-to-br from-violet-500 to-violet-600 text-white">
             <div className="text-center">
               <h3 className="text-lg font-medium mb-2">3 Month Projection</h3>
               <p className="text-3xl font-bold">
