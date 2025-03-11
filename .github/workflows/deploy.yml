@@ -22,17 +22,19 @@ jobs:
           node-version: 18
           cache: 'npm'
           
-      - name: Install dependencies
+      - name: Clean install dependencies
         run: npm ci
         
-      - name: Build
-        run: npm run build
+      - name: Clean build
+        run: |
+          rm -rf dist
+          npm run build
         
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
-          retention-days: 1  # Optional: reduce retention for dev/test
+          retention-days: 1
 
   deploy:
     environment:

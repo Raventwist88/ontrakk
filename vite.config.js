@@ -40,6 +40,7 @@ export default defineConfig({
         background_color: '#ffffff',
         display: 'standalone',
         start_url: '/ontrakk/',
+        scope: '/ontrakk/',
         icons: [
           {
             src: '/ontrakk/icons/icon-192.png',
@@ -69,7 +70,8 @@ export default defineConfig({
               }
             }
           }
-        ]
+        ],
+        navigateFallback: '/ontrakk/index.html'
       },
       devOptions: {
         enabled: true
@@ -79,10 +81,21 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
-    // Ensure assets are properly hashed and cached
+    // Ensure clean build
+    emptyOutDir: true,
     rollupOptions: {
       output: {
-        manualChunks: undefined
+        // Ensure assets use the correct base path
+        assetFileNames: (assetInfo) => {
+          const info = assetInfo.name.split('.')
+          const ext = info[info.length - 1]
+          if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext)) {
+            return `assets/images/[name]-[hash][extname]`
+          }
+          return `assets/[name]-[hash][extname]`
+        },
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
       }
     }
   }
