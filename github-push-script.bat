@@ -19,6 +19,10 @@ if %errorlevel% neq 0 (
     echo Remote origin added.
 )
 
+REM Ensure we're on the main branch
+echo Switching to main branch...
+git branch -M main
+
 REM Add all files to staging
 echo Adding files to staging...
 git add .
@@ -32,7 +36,7 @@ git commit -m "%commit_msg%"
 
 REM Push to remote repository
 echo Pushing to GitHub...
-git push -u origin master
+git push -u origin main
 
 REM Check if push was successful
 if %errorlevel% == 0 (
@@ -42,8 +46,8 @@ if %errorlevel% == 0 (
     echo You might need to:
     echo 1. Check your internet connection
     echo 2. Verify you have the right permissions for the repository
-    echo 3. Try using 'main' instead of 'master' as the branch name with:
-    echo    git push -u origin main
+    echo 3. If you see conflicts, you might need to pull first with:
+    echo    git pull origin main
 )
 
 pause
