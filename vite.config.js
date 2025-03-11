@@ -15,7 +15,7 @@ const getBase = () => {
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: getBase(),
+  base: '/ontrakk/',
   root: path.resolve(__dirname, ''),
   server: {
     port: 5173,
@@ -39,16 +39,16 @@ export default defineConfig({
         theme_color: '#ffffff',
         background_color: '#ffffff',
         display: 'standalone',
-        start_url: getBase(), // Dynamic start_url
+        start_url: '/ontrakk/',
         icons: [
           {
-            src: `${getBase()}icons/icon-192.png`, // Dynamic path
+            src: '/ontrakk/icons/icon-192.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any maskable'
           },
           {
-            src: `${getBase()}icons/icon-512.png`, // Dynamic path
+            src: '/ontrakk/icons/icon-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'
