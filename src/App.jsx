@@ -1,4 +1,4 @@
-import { BrowserRouter as Router } from 'react-router-dom'
+import { HashRouter as Router } from 'react-router-dom'
 import AppRoutes from './Routes'
 import MobileLayout from './components/layout/MobileLayout'
 import { useEffect } from 'react'
@@ -24,7 +24,7 @@ function App() {
 
 
   return (
-    <Router basename="/ontrakk">
+    <Router>
       <AppRoutes />
     </Router>
   )
