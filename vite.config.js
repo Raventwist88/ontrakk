@@ -30,34 +30,15 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
+      strategies: 'generateSW',
       registerType: 'autoUpdate',
-      includeAssets: ['icons/*'],
-      manifest: {
-        name: 'OnTrakk',
-        short_name: 'OnTrakk',
-        description: 'Track your fitness journey',
-        theme_color: '#ffffff',
-        background_color: '#ffffff',
-        display: 'standalone',
-        start_url: '/ontrakk/',
-        scope: '/ontrakk/',
-        icons: [
-          {
-            src: '/ontrakk/icons/icon-192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any maskable'
-          },
-          {
-            src: '/ontrakk/icons/icon-512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable'
-          }
-        ]
-      },
+      injectRegister: 'auto',
+      manifest: false, // We'll use our existing manifest.json
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        globDirectory: 'dist',
+        globPatterns: [
+          '**/*.{html,js,css,ico,png,svg,webp,jpg,jpeg,json,woff2}'
+        ],
         runtimeCaching: [
           {
             urlPattern: new RegExp('^https://api\\..*'),
@@ -72,6 +53,7 @@ export default defineConfig({
           }
         ],
         navigateFallback: '/ontrakk/index.html',
+        navigateFallbackAllowlist: [/^\/ontrakk\//],
         cleanupOutdatedCaches: true
       },
       devOptions: {
