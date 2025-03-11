@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Line } from 'react-chartjs-2'
 import {
   Chart as ChartJS,
@@ -27,6 +27,7 @@ ChartJS.register(
 
 function StatsCharts() {
   const { stats, loading } = useStatsStore()
+  const [timeFilter, setTimeFilter] = useState('all') // Default to all time
 
   if (loading && !stats) {
     return <div>Loading stats...</div>
@@ -35,6 +36,30 @@ function StatsCharts() {
   if (!stats) {
     return <div>No stats available</div>
   }
+
+  // Filter data based on selected time range
+  const filterData = (data) => {
+    if (timeFilter === 'all') {
+      return data // Return all data without filtering
+    }
+
+    const now = new Date()
+    const filterRanges = {
+      'week': 7,
+      'month': 30,
+      '3months': 90,
+      '12months': 365
+    }
+    
+    const daysToShow = filterRanges[timeFilter]
+    const cutoffDate = new Date(now.setDate(now.getDate() - daysToShow))
+
+    return data.filter(entry => new Date(entry.date) >= cutoffDate)
+  }
+
+  // Apply filters to both trends
+  const filteredWeightTrend = filterData(stats.weightTrend || [])
+  const filteredCalorieTrend = filterData(stats.calorieTrend || [])
 
   // Ensure we have data arrays
   const weightTrend = stats.weightTrend || []
@@ -76,19 +101,73 @@ function StatsCharts() {
 
   return (
     <div className="space-y-8">
-      {weightTrend.length > 0 && (
+      {/* Add filter buttons */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => setTimeFilter('week')}
+          className={`px-4 py-2 rounded ${
+            timeFilter === 'week' 
+              ? 'bg-blue-500 text-white' 
+              : 'bg-gray-200 hover:bg-gray-300'
+          }`}
+        >
+          1 Week
+        </button>
+        <button
+          onClick={() => setTimeFilter('month')}
+          className={`px-4 py-2 rounded ${
+            timeFilter === 'month' 
+              ? 'bg-blue-500 text-white' 
+              : 'bg-gray-200 hover:bg-gray-300'
+          }`}
+        >
+          1 Month
+        </button>
+        <button
+          onClick={() => setTimeFilter('3months')}
+          className={`px-4 py-2 rounded ${
+            timeFilter === '3months' 
+              ? 'bg-blue-500 text-white' 
+              : 'bg-gray-200 hover:bg-gray-300'
+          }`}
+        >
+          3 Months
+        </button>
+        <button
+          onClick={() => setTimeFilter('12months')}
+          className={`px-4 py-2 rounded ${
+            timeFilter === '12months' 
+              ? 'bg-blue-500 text-white' 
+              : 'bg-gray-200 hover:bg-gray-300'
+          }`}
+        >
+          12 Months
+        </button>
+        <button
+          onClick={() => setTimeFilter('all')}
+          className={`px-4 py-2 rounded ${
+            timeFilter === 'all' 
+              ? 'bg-blue-500 text-white' 
+              : 'bg-gray-200 hover:bg-gray-300'
+          }`}
+        >
+          All Time
+        </button>
+      </div>
+
+      {filteredWeightTrend.length > 0 && (
         <div>
           <h3 className="text-lg font-medium mb-4">Weight Trend</h3>
           <div className="h-[300px]">
             <Line
               data={{
-                labels: weightTrend.map(entry => 
+                labels: filteredWeightTrend.map(entry => 
                   new Date(entry.date).toLocaleDateString()
                 ),
                 datasets: [
                   {
                     label: 'Weight (kg)',
-                    data: weightTrend.map(entry => entry.weight),
+                    data: filteredWeightTrend.map(entry => entry.weight),
                     borderColor: 'rgb(59, 130, 246)',
                     backgroundColor: 'rgba(59, 130, 246, 0.1)',
                     fill: true
@@ -101,26 +180,26 @@ function StatsCharts() {
         </div>
       )}
 
-      {calorieTrend.length > 0 && (
+      {filteredCalorieTrend.length > 0 && (
         <div>
           <h3 className="text-lg font-medium mb-4">Calorie Tracking</h3>
           <div className="h-[300px]">
             <Line
               data={{
-                labels: calorieTrend.map(entry =>
+                labels: filteredCalorieTrend.map(entry =>
                   new Date(entry.date).toLocaleDateString()
                 ),
                 datasets: [
                   {
                     label: 'Calories In',
-                    data: calorieTrend.map(entry => entry.intake),
+                    data: filteredCalorieTrend.map(entry => entry.intake),
                     borderColor: 'rgb(34, 197, 94)',
                     backgroundColor: 'rgba(34, 197, 94, 0.1)',
                     fill: true
                   },
                   {
                     label: 'Calories Burned',
-                    data: calorieTrend.map(entry => entry.burned),
+                    data: filteredCalorieTrend.map(entry => entry.burned),
                     borderColor: 'rgb(239, 68, 68)',
                     backgroundColor: 'rgba(239, 68, 68, 0.1)',
                     fill: true
