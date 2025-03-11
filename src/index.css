@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Prevent iOS text size adjustment */
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Remove tap highlight on iOS */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Enable smooth scrolling */
+.smooth-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent pull-to-refresh on iOS */
+body {
+  overscroll-behavior-y: none;
+}
+
+@layer base {
+  .dark {
+    color-scheme: dark;
+  }
+  
+  .dark ::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+  
+  .dark input[type="time"],
+  .dark input[type="date"] {
+    color-scheme: dark;
+  }
+}
