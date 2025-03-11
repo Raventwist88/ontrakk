@@ -28,10 +28,11 @@ jobs:
       - name: Build
         run: npm run build
         
-      - name: Upload artifact
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
+          retention-days: 1  # Optional: reduce retention for dev/test
 
   deploy:
     environment:
