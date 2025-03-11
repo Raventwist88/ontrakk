@@ -1,1 +1,1 @@
-if('serviceWorker' in navigator) navigator.serviceWorker.register('/your-repo-name/dev-sw.js?dev-sw', { scope: '/your-repo-name/', type: 'classic' })
+if('serviceWorker' in navigator) navigator.serviceWorker.register('/ontrakk/dev-sw.js?dev-sw', { scope: '/ontrakk/', type: 'classic' })

@@ -82,13 +82,13 @@ define(['./workbox-7fb42abd'], (function (workbox) { 'use strict';
    */
   workbox.precacheAndRoute([{
     "url": "registerSW.js",
-    "revision": "85cc01e9d00d628b39863218e6880673"
+    "revision": "5f34adc26ae363281ef31b41397650a2"
   }, {
-    "url": "index.html",
-    "revision": "0.joa89amassg"
+    "url": "/ontrakk/index.html",
+    "revision": "0.25br9r00lhg"
   }], {});
   workbox.cleanupOutdatedCaches();
-  workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
+  workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("/ontrakk/index.html"), {
     allowlist: [/^\/$/]
   }));
   workbox.registerRoute(/^https:\/\/api\..*/, new workbox.NetworkFirst({

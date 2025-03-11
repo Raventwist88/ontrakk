@@ -1,6 +1,6 @@
 import { BrowserRouter as Router } from 'react-router-dom'
+import AppRoutes from './Routes'
 import MobileLayout from './components/layout/MobileLayout'
-import Routes from './Routes'
 import { useEffect } from 'react'
 import { useStatsStore } from './stores/statsStore'
 import { useDailyEntryStore } from './stores/dailyEntryStore'
@@ -24,10 +24,8 @@ function App() {
 
 
   return (
-    <Router>
-      <MobileLayout>
-        <Routes />
-      </MobileLayout>
+    <Router basename="/ontrakk">
+      <AppRoutes />
     </Router>
   )
 }
