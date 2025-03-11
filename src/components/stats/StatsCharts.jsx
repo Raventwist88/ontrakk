@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { Line } from 'react-chartjs-2'
 import {
   Chart as ChartJS,
@@ -25,14 +26,14 @@ ChartJS.register(
 )
 
 function StatsCharts() {
-  const { stats } = useStatsStore()
+  const { stats, loading } = useStatsStore()
 
-  // Add debug logging
-  console.log('Current stats:', stats)
-
-  // Better null check
-  if (!stats) {
+  if (loading && !stats) {
     return <div>Loading stats...</div>
+  }
+
+  if (!stats) {
+    return <div>No stats available</div>
   }
 
   // Ensure we have data arrays

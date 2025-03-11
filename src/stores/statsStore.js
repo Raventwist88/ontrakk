@@ -23,69 +23,105 @@ export const useStatsStore = create((set) => ({
   stats: null,
   loading: false,
   error: null,
-  calculateStats: async () => {
-    set({ loading: true, error: null })
-    
-    try {
-      // Get entries directly from localStorage
-      const dailyEntries = JSON.parse(localStorage.getItem('fitness-app-daily-entries') || '[]')
 
-      if (!dailyEntries?.length) {
-        set({ stats: null, loading: false })
-        return
+  calculateStats: async () => {
+    if (useStatsStore.getState().loading) return
+
+    set({ loading: true })
+    try {
+      const dbEntries = await db.getAll('dailyEntries')
+      const importedEntries = JSON.parse(localStorage.getItem('fitness-app-daily-entries') || '[]')
+
+      // Debug log
+      console.log('Raw imported entries:', importedEntries)
+      console.log('Raw DB entries:', dbEntries)
+
+      // Normalize entries with explicit parsing and validation
+      const normalizeCalories = (value) => {
+        const num = parseInt(value, 10)
+        return !isNaN(num) && num >= 0 && num < 10000 ? num : 0
       }
 
-      // Sort entries by date
-      const sortedEntries = [...dailyEntries].sort((a, b) => 
+      const allEntries = [
+        ...importedEntries.map(entry => ({
+          date: entry.date,
+          weight: entry.weight || 0,
+          caloriesIntake: normalizeCalories(entry.calories?.intake),
+          caloriesBurned: normalizeCalories(entry.calories?.burned)
+        })),
+        ...dbEntries.map(entry => ({
+          date: entry.date,
+          weight: entry.weightKg || 0,
+          caloriesIntake: normalizeCalories(entry.caloriesIntake),
+          caloriesBurned: normalizeCalories(entry.caloriesBurned)
+        }))
+      ]
+
+      // Debug log
+      console.log('Normalized entries:', allEntries)
+
+      // Sort entries by date (newest first) for current stats
+      const sortedEntries = allEntries.sort((a, b) => new Date(b.date) - new Date(a.date))
+
+      // Find latest weight entry
+      const latestWeightEntry = sortedEntries.find(entry => entry.weight > 0)
+      const firstWeightEntry = [...sortedEntries].reverse().find(entry => entry.weight > 0)
+
+      // Calculate calorie averages
+      let totalIntake = 0
+      let totalBurned = 0
+      let validEntryCount = 0
+
+      sortedEntries.forEach(entry => {
+        if (entry.caloriesIntake >= 0 && entry.caloriesBurned >= 0) {
+          totalIntake += entry.caloriesIntake
+          totalBurned += entry.caloriesBurned
+          validEntryCount++
+        }
+      })
+
+      const avgCaloriesIntake = validEntryCount > 0 ? totalIntake / validEntryCount : 0
+      const avgCaloriesBurned = validEntryCount > 0 ? totalBurned / validEntryCount : 0
+
+      // Sort entries by date (oldest to newest) specifically for charts
+      const chronologicalEntries = [...allEntries].sort((a, b) => 
         new Date(a.date) - new Date(b.date)
       )
 
-      // Calculate basic stats
-      const currentWeight = sortedEntries[sortedEntries.length - 1]?.weight || 0
-      const startingWeight = sortedEntries[0]?.weight || 0
-      const weightChange = currentWeight - startingWeight
-
-      // Calculate averages
-      const calorieEntries = sortedEntries.filter(entry => entry.calories)
-      const avgCaloriesIntake = calorieEntries.reduce((sum, entry) => 
-        sum + (entry.calories?.intake || 0), 0) / (calorieEntries.length || 1)
-      const avgCaloriesBurned = calorieEntries.reduce((sum, entry) => 
-        sum + (entry.calories?.burned || 0), 0) / (calorieEntries.length || 1)
-
       const stats = {
-        // Summary stats
-        currentWeight,
-        startingWeight,
-        weightChange,
-        avgCaloriesIntake,
-        avgCaloriesBurned,
+        // Use chronologicalEntries for trends (oldest to newest)
+        weightTrend: chronologicalEntries.map(entry => ({
+          date: entry.date,
+          weight: entry.weight
+        })),
+        calorieTrend: chronologicalEntries.map(entry => ({
+          date: entry.date,
+          intake: entry.caloriesIntake,
+          burned: entry.caloriesBurned
+        })),
+        currentWeight: latestWeightEntry ? Number(latestWeightEntry.weight) : null,
+        weightChange: latestWeightEntry && firstWeightEntry
+          ? Number(latestWeightEntry.weight) - Number(firstWeightEntry.weight)
+          : null,
+        avgCaloriesIntake: Math.round(avgCaloriesIntake),
+        avgCaloriesBurned: Math.round(avgCaloriesBurned),
         totalDaysTracked: sortedEntries.length,
-        lastEntry: sortedEntries[sortedEntries.length - 1]?.date,
-
-        // Trend data for charts
-        weightTrend: sortedEntries
-          .filter(entry => entry.weight)
-          .map(entry => ({
-            date: entry.date,
-            weight: Number(entry.weight)
-          })),
-        calorieTrend: sortedEntries
-          .filter(entry => entry.calories)
-          .map(entry => ({
-            date: entry.date,
-            intake: Number(entry.calories?.intake) || 0,
-            burned: Number(entry.calories?.burned) || 0
-          }))
+        lastEntry: sortedEntries[0]?.date || null
       }
 
-      console.log('Calculated stats:', stats)
+      // Debug log
+      console.log('Final stats:', stats)
+
       set({ stats, loading: false })
     } catch (error) {
       console.error('Error calculating stats:', error)
-      set({ error: error.message, loading: false })
+      set({ error, loading: false })
     }
   }
 }))
+
+// Export for use in other stores
+export const { calculateStats } = useStatsStore.getState()
 
 function calculateMostCommonWorkout(workouts) {
   if (!workouts.length) return null

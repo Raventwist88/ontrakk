@@ -2,11 +2,7 @@ import { useEffect } from 'react'
 import { useStatsStore } from '../../stores/statsStore'
 
 function StatsSummary() {
-  const { stats, loading, error, calculateStats } = useStatsStore()
-
-  useEffect(() => {
-    calculateStats()
-  }, [calculateStats])
+  const { stats, loading, error } = useStatsStore()
 
   if (loading) {
     return <div>Loading stats...</div>

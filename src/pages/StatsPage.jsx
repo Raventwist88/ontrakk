@@ -12,8 +12,21 @@ function StatsPage() {
   const { dailyEntries } = useDailyEntryStore()
 
   useEffect(() => {
-    calculateStats()
-  }, [calculateStats])
+    // Use a ref to prevent multiple calculations
+    let mounted = true
+
+    const loadStats = async () => {
+      if (mounted) {
+        await calculateStats()
+      }
+    }
+
+    loadStats()
+
+    return () => {
+      mounted = false
+    }
+  }, []) // Remove calculateStats from dependencies
 
   if (loading) {
     return (
@@ -44,11 +57,16 @@ function StatsPage() {
             <div className="text-center">
               <h3 className="text-lg font-medium mb-2">Current Weight</h3>
               <p className="text-3xl font-bold">
-                {typeof stats?.currentWeight === 'number' ? stats.currentWeight.toFixed(1) : '-'} kg
+                {typeof stats?.currentWeight === 'number' 
+                  ? `${stats.currentWeight.toFixed(1)} kg` 
+                  : '- kg'
+                }
               </p>
               <p className="text-sm opacity-75 mt-1">
-                {typeof stats?.weightChange === 'number' ? 
-                  `${stats.weightChange > 0 ? '+' : ''}${stats.weightChange.toFixed(1)}` : '-'} kg change
+                {typeof stats?.weightChange === 'number'
+                  ? `${stats.weightChange > 0 ? '+' : ''}${stats.weightChange.toFixed(1)} kg change`
+                  : '- kg change'
+                }
               </p>
             </div>
           </Card>
@@ -57,10 +75,16 @@ function StatsPage() {
             <div className="text-center">
               <h3 className="text-lg font-medium mb-2">Avg. Daily Calories</h3>
               <p className="text-3xl font-bold">
-                {typeof stats?.avgCaloriesIntake === 'number' ? Math.round(stats.avgCaloriesIntake) : '-'}
+                {typeof stats?.avgCaloriesIntake === 'number' 
+                  ? Math.round(stats.avgCaloriesIntake).toLocaleString()
+                  : '-'
+                }
               </p>
               <p className="text-sm opacity-75 mt-1">
-                {typeof stats?.avgCaloriesBurned === 'number' ? Math.round(stats.avgCaloriesBurned) : '-'} calories burned
+                {typeof stats?.avgCaloriesBurned === 'number'
+                  ? `${Math.round(stats.avgCaloriesBurned).toLocaleString()} calories burned`
+                  : '- calories burned'
+                }
               </p>
             </div>
           </Card>
@@ -68,9 +92,17 @@ function StatsPage() {
           <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
             <div className="text-center">
               <h3 className="text-lg font-medium mb-2">Days Tracked</h3>
-              <p className="text-3xl font-bold">{stats?.totalDaysTracked}</p>
+              <p className="text-3xl font-bold">
+                {typeof stats?.totalDaysTracked === 'number' 
+                  ? stats.totalDaysTracked 
+                  : '-'
+                }
+              </p>
               <p className="text-sm opacity-75 mt-1">
-                Last entry: {stats?.lastEntry ? new Date(stats.lastEntry).toLocaleDateString() : 'Never'}
+                Last entry: {stats?.lastEntry 
+                  ? new Date(stats.lastEntry).toLocaleDateString() 
+                  : 'Never'
+                }
               </p>
             </div>
           </Card>
