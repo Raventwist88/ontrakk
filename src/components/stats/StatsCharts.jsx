@@ -43,9 +43,61 @@ const getLatestEntryPerDay = (entries) => {
     .sort((a, b) => new Date(a.date) - new Date(b.date))
 }
 
+// Add this helper function after the existing getLatestEntryPerDay function
+const generateWeightProjection = (currentWeight, dailyDeficit) => {
+  if (!currentWeight || !dailyDeficit) return []
+  
+  const caloriesPerKg = 7700
+  const today = new Date()
+  const projectionPoints = [
+    { days: 0, label: 'Current' },
+    { days: 7, label: '1 Week' },
+    { days: 30, label: '1 Month' },
+    { days: 90, label: '3 Months' }
+  ]
+
+  return projectionPoints.map(point => {
+    const projectedLoss = (dailyDeficit * point.days) / caloriesPerKg
+    const date = new Date(today)
+    date.setDate(date.getDate() + point.days)
+    
+    return {
+      date: date.toISOString(),
+      weight: currentWeight - projectedLoss,
+      label: point.label
+    }
+  })
+}
+
+// Update the helper function to generate daily projections
+const generateDailyProjections = (currentWeight, dailyDeficit, daysToProject) => {
+  if (!currentWeight || !dailyDeficit) return []
+  
+  const caloriesPerKg = 7700
+  const today = new Date()
+  const projections = []
+
+  // Generate a projection for each day
+  for (let day = 0; day <= daysToProject; day++) {
+    const projectedLoss = (dailyDeficit * day) / caloriesPerKg
+    const date = new Date(today)
+    date.setDate(date.getDate() + day)
+    
+    projections.push({
+      date: date.toISOString(),
+      weight: currentWeight - projectedLoss
+    })
+  }
+
+  return projections
+}
+
 function StatsCharts() {
   const { stats, loading } = useStatsStore()
   const [timeFilter, setTimeFilter] = useState('all') // Default to all time
+
+  // Add debug logging
+  console.log('Stats data:', stats)
 
   if (loading && !stats) {
     return <div>Loading stats...</div>
@@ -119,6 +171,33 @@ function StatsCharts() {
       }
     }
   }
+
+  // Get the number of days to project based on timeFilter
+  const getProjectionDays = (filter) => {
+    const filterRanges = {
+      'week': 7,
+      'month': 30,
+      '3months': 90,
+      '12months': 365,
+      'all': 90 // Default to 90 days for 'all'
+    }
+    return filterRanges[filter]
+  }
+
+  const currentWeight = filteredWeightTrend.length > 0 
+    ? filteredWeightTrend[filteredWeightTrend.length - 1].weight 
+    : null
+  
+  const dailyDeficit = stats.avgCaloriesIntake - stats.avgCaloriesBurned
+  const projectionDays = getProjectionDays(timeFilter)
+  const projectedWeights = generateDailyProjections(currentWeight, Math.abs(dailyDeficit), projectionDays)
+
+  // Debug logging
+  console.log('Projection data:', {
+    currentWeight,
+    dailyDeficit,
+    projectedWeights
+  })
 
   return (
     <div className="space-y-8">
@@ -228,6 +307,72 @@ function StatsCharts() {
                 ]
               }}
               options={chartOptions}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Updated projection chart */}
+      {currentWeight && dailyDeficit !== 0 && (
+        <div>
+          <h3 className="text-lg font-medium mb-4">
+            Weight Projection
+            <span className="text-sm font-normal text-gray-600 ml-2">
+              (Based on {Math.abs(dailyDeficit).toFixed(0)} cal daily {dailyDeficit < 0 ? 'deficit' : 'surplus'})
+            </span>
+          </h3>
+          <div className="h-[300px]">
+            <Line
+              data={{
+                labels: projectedWeights.map(entry => 
+                  new Date(entry.date).toLocaleDateString()
+                ),
+                datasets: [
+                  {
+                    label: 'Projected Weight (kg)',
+                    data: projectedWeights.map(entry => entry.weight),
+                    borderColor: 'rgb(168, 85, 247)',
+                    backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                    fill: true
+                  }
+                ]
+              }}
+              options={{
+                ...chartOptions,
+                plugins: {
+                  ...chartOptions.plugins,
+                  tooltip: {
+                    callbacks: {
+                      label: (context) => {
+                        const value = context.parsed.y.toFixed(1);
+                        const change = (value - currentWeight).toFixed(1);
+                        const days = context.dataIndex;
+                        return [
+                          `Weight: ${value} kg`,
+                          `Change: ${change} kg`,
+                          `Days from now: ${days}`
+                        ];
+                      }
+                    }
+                  }
+                },
+                scales: {
+                  ...chartOptions.scales,
+                  x: {
+                    grid: {
+                      display: false
+                    },
+                    ticks: {
+                      maxTicksLimit: 8, // Limit the number of x-axis labels for readability
+                      callback: function(value, index) {
+                        // Show fewer dates on x-axis for clarity
+                        const date = new Date(projectedWeights[index].date);
+                        return date.toLocaleDateString();
+                      }
+                    }
+                  }
+                }
+              }}
             />
           </div>
         </div>

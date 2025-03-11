@@ -7,6 +7,14 @@ import { useStatsStore } from '../stores/statsStore'
 import { useEffect } from 'react'
 import { useDailyEntryStore } from '../stores/dailyEntryStore'
 
+const calculateWeightProjection = (currentWeight, dailyDeficit, days) => {
+  if (!currentWeight || dailyDeficit === 0) return null
+  
+  const caloriesPerKg = 7700
+  const projectedLoss = (dailyDeficit * days) / caloriesPerKg
+  return currentWeight + projectedLoss
+}
+
 function StatsPage() {
   const { stats, loading, error, calculateStats } = useStatsStore()
   const { dailyEntries } = useDailyEntryStore()
@@ -102,6 +110,87 @@ function StatsPage() {
                 Last entry: {stats?.lastEntry 
                   ? new Date(stats.lastEntry).toLocaleDateString() 
                   : 'Never'
+                }
+              </p>
+            </div>
+          </Card>
+        </div>
+
+        {/* New Projection Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+            <div className="text-center">
+              <h3 className="text-lg font-medium mb-2">1 Week Projection</h3>
+              <p className="text-3xl font-bold">
+                {stats?.currentWeight && typeof stats?.avgCaloriesIntake === 'number' 
+                  ? `${calculateWeightProjection(
+                      stats.currentWeight,
+                      stats.avgCaloriesIntake - stats.avgCaloriesBurned,
+                      7
+                    )?.toFixed(1)} kg` 
+                  : '- kg'
+                }
+              </p>
+              <p className="text-sm opacity-75 mt-1">
+                {stats?.currentWeight && typeof stats?.avgCaloriesIntake === 'number'
+                  ? `${((calculateWeightProjection(
+                      stats.currentWeight,
+                      stats.avgCaloriesIntake - stats.avgCaloriesBurned,
+                      7
+                    ) - stats.currentWeight)?.toFixed(1))} kg change`
+                  : '- kg change'
+                }
+              </p>
+            </div>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+            <div className="text-center">
+              <h3 className="text-lg font-medium mb-2">1 Month Projection</h3>
+              <p className="text-3xl font-bold">
+                {stats?.currentWeight && typeof stats?.avgCaloriesIntake === 'number' 
+                  ? `${calculateWeightProjection(
+                      stats.currentWeight,
+                      stats.avgCaloriesIntake - stats.avgCaloriesBurned,
+                      30
+                    )?.toFixed(1)} kg` 
+                  : '- kg'
+                }
+              </p>
+              <p className="text-sm opacity-75 mt-1">
+                {stats?.currentWeight && typeof stats?.avgCaloriesIntake === 'number'
+                  ? `${((calculateWeightProjection(
+                      stats.currentWeight,
+                      stats.avgCaloriesIntake - stats.avgCaloriesBurned,
+                      30
+                    ) - stats.currentWeight)?.toFixed(1))} kg change`
+                  : '- kg change'
+                }
+              </p>
+            </div>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+            <div className="text-center">
+              <h3 className="text-lg font-medium mb-2">3 Month Projection</h3>
+              <p className="text-3xl font-bold">
+                {stats?.currentWeight && typeof stats?.avgCaloriesIntake === 'number' 
+                  ? `${calculateWeightProjection(
+                      stats.currentWeight,
+                      stats.avgCaloriesIntake - stats.avgCaloriesBurned,
+                      90
+                    )?.toFixed(1)} kg` 
+                  : '- kg'
+                }
+              </p>
+              <p className="text-sm opacity-75 mt-1">
+                {stats?.currentWeight && typeof stats?.avgCaloriesIntake === 'number'
+                  ? `${((calculateWeightProjection(
+                      stats.currentWeight,
+                      stats.avgCaloriesIntake - stats.avgCaloriesBurned,
+                      90
+                    ) - stats.currentWeight)?.toFixed(1))} kg change`
+                  : '- kg change'
                 }
               </p>
             </div>
