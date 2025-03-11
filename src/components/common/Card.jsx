@@ -7,11 +7,11 @@ function Card({ title, children, className = '' }) {
     <div className={`
       ${colors.card} 
       ${colors.border}
-      border rounded-lg shadow-sm p-4
+      border rounded-lg shadow-sm p-2 sm:p-4
       ${className}
     `}>
       {title && (
-        <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+        <h2 className="text-base sm:text-lg font-semibold mb-2 sm:mb-4 text-gray-900 dark:text-white">
           {title}
         </h2>
       )}

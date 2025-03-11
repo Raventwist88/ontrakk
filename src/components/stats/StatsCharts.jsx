@@ -200,12 +200,12 @@ function StatsCharts() {
   })
 
   return (
-    <div className="space-y-8">
-      {/* Add filter buttons */}
-      <div className="flex gap-2">
+    <div className="space-y-6 w-full">
+      {/* Make filters wrap instead of scroll */}
+      <div className="flex flex-wrap gap-1.5 sm:gap-2">
         <button
           onClick={() => setTimeFilter('week')}
-          className={`px-4 py-2 rounded ${
+          className={`px-2.5 py-1.5 text-sm rounded ${
             timeFilter === 'week' 
               ? 'bg-blue-500 text-white' 
               : 'bg-gray-200 hover:bg-gray-300'
@@ -215,7 +215,7 @@ function StatsCharts() {
         </button>
         <button
           onClick={() => setTimeFilter('month')}
-          className={`px-4 py-2 rounded ${
+          className={`px-2.5 py-1.5 text-sm rounded ${
             timeFilter === 'month' 
               ? 'bg-blue-500 text-white' 
               : 'bg-gray-200 hover:bg-gray-300'
@@ -225,7 +225,7 @@ function StatsCharts() {
         </button>
         <button
           onClick={() => setTimeFilter('3months')}
-          className={`px-4 py-2 rounded ${
+          className={`px-2.5 py-1.5 text-sm rounded ${
             timeFilter === '3months' 
               ? 'bg-blue-500 text-white' 
               : 'bg-gray-200 hover:bg-gray-300'
@@ -235,7 +235,7 @@ function StatsCharts() {
         </button>
         <button
           onClick={() => setTimeFilter('12months')}
-          className={`px-4 py-2 rounded ${
+          className={`px-2.5 py-1.5 text-sm rounded ${
             timeFilter === '12months' 
               ? 'bg-blue-500 text-white' 
               : 'bg-gray-200 hover:bg-gray-300'
@@ -245,7 +245,7 @@ function StatsCharts() {
         </button>
         <button
           onClick={() => setTimeFilter('all')}
-          className={`px-4 py-2 rounded ${
+          className={`px-2.5 py-1.5 text-sm rounded ${
             timeFilter === 'all' 
               ? 'bg-blue-500 text-white' 
               : 'bg-gray-200 hover:bg-gray-300'
@@ -257,8 +257,8 @@ function StatsCharts() {
 
       {filteredWeightTrend.length > 0 && (
         <div>
-          <h3 className="text-lg font-medium mb-4">Weight Trend</h3>
-          <div className="h-[300px]">
+          <h3 className="text-sm font-medium mb-2">Weight Trend</h3>
+          <div className="h-[250px] min-h-[250px] w-full">
             <Line
               data={{
                 labels: filteredWeightTrend.map(entry => 
@@ -274,7 +274,11 @@ function StatsCharts() {
                   }
                 ]
               }}
-              options={chartOptions}
+              options={{
+                ...chartOptions,
+                maintainAspectRatio: false,
+                responsive: true
+              }}
             />
           </div>
         </div>
@@ -282,8 +286,8 @@ function StatsCharts() {
 
       {filteredCalorieTrend.length > 0 && (
         <div>
-          <h3 className="text-lg font-medium mb-4">Calorie Tracking</h3>
-          <div className="h-[300px]">
+          <h3 className="text-sm font-medium mb-2">Calorie Tracking</h3>
+          <div className="h-[250px] min-h-[250px] w-full">
             <Line
               data={{
                 labels: filteredCalorieTrend.map(entry =>
@@ -306,7 +310,11 @@ function StatsCharts() {
                   }
                 ]
               }}
-              options={chartOptions}
+              options={{
+                ...chartOptions,
+                maintainAspectRatio: false,
+                responsive: true
+              }}
             />
           </div>
         </div>
@@ -315,13 +323,13 @@ function StatsCharts() {
       {/* Updated projection chart */}
       {currentWeight && dailyDeficit !== 0 && (
         <div>
-          <h3 className="text-lg font-medium mb-4">
+          <h3 className="text-sm font-medium mb-2">
             Weight Projection
-            <span className="text-sm font-normal text-gray-600 ml-2">
+            <span className="text-xs font-normal text-gray-600 block sm:inline sm:ml-2">
               (Based on {Math.abs(dailyDeficit).toFixed(0)} cal daily {dailyDeficit < 0 ? 'deficit' : 'surplus'})
             </span>
           </h3>
-          <div className="h-[300px]">
+          <div className="h-[250px] min-h-[250px] w-full">
             <Line
               data={{
                 labels: projectedWeights.map(entry => 
@@ -359,16 +367,11 @@ function StatsCharts() {
                 scales: {
                   ...chartOptions.scales,
                   x: {
-                    grid: {
-                      display: false
-                    },
+                    ...chartOptions.scales.x,
                     ticks: {
-                      maxTicksLimit: 8, // Limit the number of x-axis labels for readability
-                      callback: function(value, index) {
-                        // Show fewer dates on x-axis for clarity
-                        const date = new Date(projectedWeights[index].date);
-                        return date.toLocaleDateString();
-                      }
+                      maxTicksLimit: window.innerWidth < 768 ? 5 : 8, // Fewer ticks on mobile
+                      maxRotation: 45, // Rotate labels for better fit
+                      minRotation: 45
                     }
                   }
                 }

@@ -58,70 +58,70 @@ function StatsPage() {
 
   return (
     <PageLayout title="Statistics">
-      <div className="grid gap-6">
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+      <div className="grid gap-3 px-2 sm:px-0">
+        {/* Stats Cards - 2 columns on mobile, 3 on larger screens */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
+          <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-2 sm:p-3">
             <div className="text-center">
-              <h3 className="text-lg font-medium mb-2">Current Weight</h3>
-              <p className="text-3xl font-bold">
+              <div className="text-xs sm:text-sm font-medium mb-0.5">Current Weight</div>
+              <div className="text-lg sm:text-xl font-bold leading-none">
                 {typeof stats?.currentWeight === 'number' 
                   ? `${stats.currentWeight.toFixed(1)} kg` 
                   : '- kg'
                 }
-              </p>
-              <p className="text-sm opacity-75 mt-1">
+              </div>
+              <div className="text-[10px] sm:text-xs opacity-75 mt-0.5">
                 {typeof stats?.weightChange === 'number'
                   ? `${stats.weightChange > 0 ? '+' : ''}${stats.weightChange.toFixed(1)} kg change`
                   : '- kg change'
                 }
-              </p>
+              </div>
             </div>
           </Card>
 
-          <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white">
+          <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white p-2 sm:p-3">
             <div className="text-center">
-              <h3 className="text-lg font-medium mb-2">Avg. Daily Calories</h3>
-              <p className="text-3xl font-bold">
+              <div className="text-xs sm:text-sm font-medium mb-0.5">Avg. Daily Calories</div>
+              <div className="text-lg sm:text-xl font-bold leading-none">
                 {typeof stats?.avgCaloriesIntake === 'number' 
                   ? Math.round(stats.avgCaloriesIntake).toLocaleString()
                   : '-'
                 }
-              </p>
-              <p className="text-sm opacity-75 mt-1">
+              </div>
+              <div className="text-[10px] sm:text-xs opacity-75 mt-0.5">
                 {typeof stats?.avgCaloriesBurned === 'number'
-                  ? `${Math.round(stats.avgCaloriesBurned).toLocaleString()} calories burned`
-                  : '- calories burned'
+                  ? `${Math.round(stats.avgCaloriesBurned).toLocaleString()} burned`
+                  : '- burned'
                 }
-              </p>
+              </div>
             </div>
           </Card>
 
-          <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+          <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-2 sm:p-3">
             <div className="text-center">
-              <h3 className="text-lg font-medium mb-2">Days Tracked</h3>
-              <p className="text-3xl font-bold">
+              <div className="text-xs sm:text-sm font-medium mb-0.5">Days Tracked</div>
+              <div className="text-lg sm:text-xl font-bold leading-none">
                 {typeof stats?.totalDaysTracked === 'number' 
                   ? stats.totalDaysTracked 
                   : '-'
                 }
-              </p>
-              <p className="text-sm opacity-75 mt-1">
-                Last entry: {stats?.lastEntry 
+              </div>
+              <div className="text-[10px] sm:text-xs opacity-75 mt-0.5">
+                Last: {stats?.lastEntry 
                   ? new Date(stats.lastEntry).toLocaleDateString() 
                   : 'Never'
                 }
-              </p>
+              </div>
             </div>
           </Card>
         </div>
 
-        {/* New Projection Cards with different colors */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-gradient-to-br from-indigo-500 to-indigo-600 text-white">
+        {/* Projection Cards - also 2 columns on mobile */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
+          <Card className="bg-gradient-to-br from-indigo-500 to-indigo-600 text-white p-2 sm:p-3">
             <div className="text-center">
-              <h3 className="text-lg font-medium mb-2">1 Week Projection</h3>
-              <p className="text-3xl font-bold">
+              <div className="text-xs sm:text-sm font-medium mb-0.5">1 Week Projection</div>
+              <div className="text-lg sm:text-xl font-bold leading-none">
                 {stats?.currentWeight && typeof stats?.avgCaloriesIntake === 'number' 
                   ? `${calculateWeightProjection(
                       stats.currentWeight,
@@ -130,8 +130,8 @@ function StatsPage() {
                     )?.toFixed(1)} kg` 
                   : '- kg'
                 }
-              </p>
-              <p className="text-sm opacity-75 mt-1">
+              </div>
+              <div className="text-[10px] sm:text-xs opacity-75 mt-0.5">
                 {stats?.currentWeight && typeof stats?.avgCaloriesIntake === 'number'
                   ? `${((calculateWeightProjection(
                       stats.currentWeight,
@@ -140,14 +140,14 @@ function StatsPage() {
                     ) - stats.currentWeight)?.toFixed(1))} kg change`
                   : '- kg change'
                 }
-              </p>
+              </div>
             </div>
           </Card>
 
-          <Card className="bg-gradient-to-br from-fuchsia-500 to-fuchsia-600 text-white">
+          <Card className="bg-gradient-to-br from-fuchsia-500 to-fuchsia-600 text-white p-2 sm:p-3">
             <div className="text-center">
-              <h3 className="text-lg font-medium mb-2">1 Month Projection</h3>
-              <p className="text-3xl font-bold">
+              <div className="text-xs sm:text-sm font-medium mb-0.5">1 Month Projection</div>
+              <div className="text-lg sm:text-xl font-bold leading-none">
                 {stats?.currentWeight && typeof stats?.avgCaloriesIntake === 'number' 
                   ? `${calculateWeightProjection(
                       stats.currentWeight,
@@ -156,8 +156,8 @@ function StatsPage() {
                     )?.toFixed(1)} kg` 
                   : '- kg'
                 }
-              </p>
-              <p className="text-sm opacity-75 mt-1">
+              </div>
+              <div className="text-[10px] sm:text-xs opacity-75 mt-0.5">
                 {stats?.currentWeight && typeof stats?.avgCaloriesIntake === 'number'
                   ? `${((calculateWeightProjection(
                       stats.currentWeight,
@@ -166,14 +166,14 @@ function StatsPage() {
                     ) - stats.currentWeight)?.toFixed(1))} kg change`
                   : '- kg change'
                 }
-              </p>
+              </div>
             </div>
           </Card>
 
-          <Card className="bg-gradient-to-br from-violet-500 to-violet-600 text-white">
+          <Card className="bg-gradient-to-br from-violet-500 to-violet-600 text-white p-2 sm:p-3">
             <div className="text-center">
-              <h3 className="text-lg font-medium mb-2">3 Month Projection</h3>
-              <p className="text-3xl font-bold">
+              <div className="text-xs sm:text-sm font-medium mb-0.5">3 Month Projection</div>
+              <div className="text-lg sm:text-xl font-bold leading-none">
                 {stats?.currentWeight && typeof stats?.avgCaloriesIntake === 'number' 
                   ? `${calculateWeightProjection(
                       stats.currentWeight,
@@ -182,8 +182,8 @@ function StatsPage() {
                     )?.toFixed(1)} kg` 
                   : '- kg'
                 }
-              </p>
-              <p className="text-sm opacity-75 mt-1">
+              </div>
+              <div className="text-[10px] sm:text-xs opacity-75 mt-0.5">
                 {stats?.currentWeight && typeof stats?.avgCaloriesIntake === 'number'
                   ? `${((calculateWeightProjection(
                       stats.currentWeight,
@@ -192,25 +192,25 @@ function StatsPage() {
                     ) - stats.currentWeight)?.toFixed(1))} kg change`
                   : '- kg change'
                 }
-              </p>
+              </div>
             </div>
           </Card>
         </div>
 
         {/* Charts */}
-        <Card title="Progress Charts">
+        <Card title="Progress Charts" className="overflow-hidden">
           <StatsCharts />
         </Card>
 
         {/* Detailed Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card title="Workout Statistics">
-            <div className="space-y-4">
-              <div className="flex justify-between items-center pb-2 border-b">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          <Card title="Workout Statistics" className="p-3">
+            <div className="space-y-2">
+              <div className="flex justify-between items-center pb-1 border-b text-sm">
                 <span>Completion Rate</span>
                 <span className="font-semibold">{stats?.workoutStats?.completionRate}%</span>
               </div>
-              <div className="flex justify-between items-center pb-2 border-b">
+              <div className="flex justify-between items-center pb-1 border-b text-sm">
                 <span>Monthly Workouts</span>
                 <span className="font-semibold">
                   {stats?.workoutStats?.monthlyWorkouts} / {stats?.workoutStats?.plannedWorkouts}
@@ -223,15 +223,15 @@ function StatsPage() {
             </div>
           </Card>
 
-          <Card title="Nutrition Summary">
-            <div className="space-y-4">
-              <div className="flex justify-between items-center pb-2 border-b">
+          <Card title="Nutrition Summary" className="p-3">
+            <div className="space-y-2">
+              <div className="flex justify-between items-center pb-1 border-b text-sm">
                 <span>Average Daily Deficit</span>
                 <span className="font-semibold">
                   {(stats?.avgCaloriesIntake - stats?.avgCaloriesBurned).toFixed(0)} cal
                 </span>
               </div>
-              <div className="flex justify-between items-center pb-2 border-b">
+              <div className="flex justify-between items-center pb-1 border-b text-sm">
                 <span>Highest Calorie Day</span>
                 <span className="font-semibold">
                   {Math.max(...(stats?.calorieTrend?.map(d => d.intake) || [0]))} cal
