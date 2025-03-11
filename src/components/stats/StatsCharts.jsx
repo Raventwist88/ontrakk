@@ -25,6 +25,24 @@ ChartJS.register(
   Filler
 )
 
+// Add this helper function at the top of the file, after the imports
+const getLatestEntryPerDay = (entries) => {
+  const entriesByDay = entries.reduce((acc, entry) => {
+    const date = new Date(entry.date).setHours(0, 0, 0, 0)
+    
+    // If we don't have an entry for this day, or if this entry is more recent
+    if (!acc[date] || new Date(entry.date) > new Date(acc[date].date)) {
+      acc[date] = entry
+    }
+    
+    return acc
+  }, {})
+
+  // Convert back to array and sort by date
+  return Object.values(entriesByDay)
+    .sort((a, b) => new Date(a.date) - new Date(b.date))
+}
+
 function StatsCharts() {
   const { stats, loading } = useStatsStore()
   const [timeFilter, setTimeFilter] = useState('all') // Default to all time
@@ -39,8 +57,11 @@ function StatsCharts() {
 
   // Filter data based on selected time range
   const filterData = (data) => {
+    // First consolidate entries by day
+    const consolidatedData = getLatestEntryPerDay(data)
+    
     if (timeFilter === 'all') {
-      return data // Return all data without filtering
+      return consolidatedData
     }
 
     const now = new Date()
@@ -54,7 +75,7 @@ function StatsCharts() {
     const daysToShow = filterRanges[timeFilter]
     const cutoffDate = new Date(now.setDate(now.getDate() - daysToShow))
 
-    return data.filter(entry => new Date(entry.date) >= cutoffDate)
+    return consolidatedData.filter(entry => new Date(entry.date) >= cutoffDate)
   }
 
   // Apply filters to both trends

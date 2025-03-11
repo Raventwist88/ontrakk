@@ -7,6 +7,7 @@ import Switch from '../components/common/Switch'
 import { useWorkoutStore } from '../stores/workoutStore'
 import { useDailyEntryStore } from '../stores/dailyEntryStore'
 import { useStatsStore } from '../stores/statsStore'
+import { db } from '../utils/db'
 
 function SettingsPage() {
   const { workouts } = useWorkoutStore()
@@ -26,14 +27,68 @@ function SettingsPage() {
   const [exportLoading, setExportLoading] = useState(false)
   const [importLoading, setImportLoading] = useState(false)
 
-  const handleExportData = () => {
+  const handleExportData = async () => {
     setExportLoading(true)
     try {
-      // Get data directly from localStorage to ensure we have everything
+      const workouts = JSON.parse(localStorage.getItem('fitness-app-workouts') || '[]')
+      const settings = JSON.parse(localStorage.getItem('fitness-app-settings') || '{}')
+      
+      // Get entries from both sources
+      const dbEntries = await db.getAll('dailyEntries')
+      const importedEntries = JSON.parse(localStorage.getItem('fitness-app-daily-entries') || '[]')
+      
+      // Normalize entry format
+      const normalizeEntry = (entry) => {
+        if (entry.weightKg) {
+          // New format -> Old format
+          return {
+            id: entry.id,
+            date: entry.date.split('T')[0], // Convert to YYYY-MM-DD
+            weight: Number(entry.weightKg),
+            calories: {
+              intake: Number(entry.caloriesIntake),
+              burned: Number(entry.caloriesBurned),
+              net: Number(entry.caloriesIntake) - Number(entry.caloriesBurned)
+            },
+            completedWorkouts: entry.completedWorkouts || [],
+            notes: entry.notes || ''
+          }
+        } else {
+          // Already in old format, just ensure consistent types
+          return {
+            id: entry.id,
+            date: entry.date.split('T')[0], // Ensure consistent date format
+            weight: Number(entry.weight),
+            calories: {
+              intake: Number(entry.calories.intake),
+              burned: Number(entry.calories.burned),
+              net: Number(entry.calories.net)
+            },
+            completedWorkouts: entry.completedWorkouts || [],
+            notes: entry.notes || ''
+          }
+        }
+      }
+
+      // Combine and normalize all entries
+      const allEntries = [
+        ...importedEntries.map(normalizeEntry),
+        ...dbEntries.map(normalizeEntry)
+      ]
+
+      // Deduplicate entries
+      const uniqueEntries = allEntries.reduce((acc, entry) => {
+        const date = new Date(entry.date).setHours(0, 0, 0, 0)
+        if (!acc[date] || new Date(entry.date) > new Date(acc[date].date)) {
+          acc[date] = entry
+        }
+        return acc
+      }, {})
+
       const exportData = {
-        workouts: JSON.parse(localStorage.getItem('fitness-app-workouts') || '[]'),
-        dailyEntries: JSON.parse(localStorage.getItem('fitness-app-daily-entries') || '[]'),
-        settings: JSON.parse(localStorage.getItem('fitness-app-settings') || '{}'),
+        workouts,
+        dailyEntries: Object.values(uniqueEntries),
+        settings,
         exportDate: new Date().toISOString()
       }
 
